@@ -1,0 +1,199 @@
+name: Foods Connected GitOps Deployment Template
+
+on:
+  push: {}
+
+  workflow_dispatch:
+    inputs:
+      azure_credentials_name:
+        description: Specify a credentials secret name to override the default
+        type: string
+        required: false
+      azure_resource_group:
+        description: Specify a resource group name to override the default
+        type: string
+        required: false
+      fc_deploy_namespace:
+        description: Specify a deployment namespace in the cluster
+        type: string
+        required: false
+      force_deploy:
+        description: Force a deployment to the target environment
+        type: boolean
+        default: false
+
+concurrency: ci-${{ github.repository }}
+
+env: {}
+  # TODO: uncomment for the correct target environment
+  # DEFAULT_AZURE_CREDENTIALS_NAME: "AZURE_CREDENTIALS"
+  # DEFAULT_AZURE_RESOURCE_GROUP: "rg-core-dev-001"
+  # DEFAULT_AZURE_CREDENTIALS_NAME: "AZURE_PROD_CREDENTIALS"
+  # DEFAULT_AZURE_RESOURCE_GROUP: "rg-core-prod-001"
+  # DEFAULT_FC_DEPLOY_NAMESPACE: ""
+  # DEFAULT_FC_ACR_INSTANCE: "001"
+  # DEFAULT_FC_CLUSTER_INSTANCE: "001"
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+
+  bootstrap:
+    runs-on: [self-hosted, ubuntu-20.04]
+
+    outputs:
+      AZURE_CREDENTIALS_NAME: ${{ steps.env.outputs.AZURE_CREDENTIALS_NAME }}
+      AZURE_RESOURCE_GROUP: ${{ steps.env.outputs.AZURE_RESOURCE_GROUP }}
+      FC_DEPLOY_NAMESPACE: ${{ steps.env.outputs.FC_DEPLOY_NAMESPACE }}
+      AZURE_CLUSTER_NAME: ${{ steps.aks.outputs.AZURE_CLUSTER_NAME }}
+      AZURE_ACR_NAME: ${{ steps.acr.outputs.AZURE_ACR_NAME }}
+      AZURE_ACR_LOGIN_SERVER: ${{ steps.acr.outputs.AZURE_ACR_LOGIN_SERVER }}
+      AZURE_ACR_USERNAME: ${{ steps.acr.outputs.AZURE_ACR_USERNAME }}
+      AZURE_ACR_GITHUB_SECRET_NAME: ${{ steps.acr.outputs.AZURE_ACR_GITHUB_SECRET_NAME }}
+      AZURE_UPSTREAM_ACR_NAME: ${{ steps.acr.outputs.AZURE_UPSTREAM_ACR_NAME }}
+      AZURE_UPSTREAM_ACR_LOGIN_SERVER: ${{ steps.acr.outputs.AZURE_UPSTREAM_ACR_LOGIN_SERVER }}
+      AZURE_UPSTREAM_ACR_ID: ${{ steps.acr.outputs.AZURE_UPSTREAM_ACR_ID }}
+      AZURE_UPSTREAM_ACR_RESOURCE_GROUP: ${{ steps.acr.outputs.AZURE_UPSTREAM_ACR_RESOURCE_GROUP }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.FC_REPO_CHECKOUT_ALL }}
+          submodules: true
+          lfs: true
+
+      - name: Set the env vars
+        id: env
+        run: |
+          @(
+            @{ name = 'AZURE_CREDENTIALS_NAME'; values = @('${{ inputs.azure_credentials_name }}', '${{ env.DEFAULT_AZURE_CREDENTIALS_NAME }}') },
+            @{ name = 'AZURE_RESOURCE_GROUP'; values = @('${{ inputs.azure_resource_group }}', '${{ env.DEFAULT_AZURE_RESOURCE_GROUP }}') }
+            @{ name = 'FC_DEPLOY_NAMESPACE'; values = @(
+              '${{ inputs.fc_deploy_namespace }}'
+              &{
+                switch -regex ('${{ github.ref_name }}') {
+                  '^feature\/' { ('${{ github.ref_name }}' -replace '^feature\/').ToLower() }
+                  default { '' }
+                }
+              }
+              '${{ env.DEFAULT_FC_DEPLOY_NAMESPACE }}'
+            ) }
+          ) | ForEach-Object {
+            [string] $name = $_.name
+            [object] $value = $_.values | Where-Object { $_ } | Select-Object -First 1
+            if (!$value) {
+              Write-Error "You must set a value for the env var '${name}'"
+            }
+            "${name}=${value}" |
+              Tee-Object -FilePath $env:GITHUB_OUTPUT -Append -Encoding Ascii |
+              Tee-Object -FilePath $env:GITHUB_ENV -Append -Encoding Ascii
+          }
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets[env.AZURE_CREDENTIALS_NAME] }}
+
+      - name: Get the AKS configuration
+        id: aks
+        run: |
+          ./.github/scripts-common/bootstrap/get-aks.ps1 `
+            -resourceGroup '${{ env.AZURE_RESOURCE_GROUP }}' `
+            -instance '${{ env.DEFAULT_FC_CLUSTER_INSTANCE }}'
+
+      - name: Get the ACR configuration
+        id: acr
+        run: |
+          ./.github/scripts-common/bootstrap/get-acr.ps1 `
+            -resourceGroup '${{ env.AZURE_RESOURCE_GROUP }}' `
+            -instance '${{ env.DEFAULT_FC_ACR_INSTANCE }}'
+
+      - name: Check the ACR password
+        run: |
+          [string] $acrPassword = '${{ secrets[env.AZURE_ACR_GITHUB_SECRET_NAME] }}'
+          if (($acrPassword -ne '${{ env.AZURE_ACR_PASSWORDS_0 }}') -and ($acrPassword -ne '${{ env.AZURE_ACR_PASSWORDS_1 }}')) {
+            Write-Error "Failed to match either ACR password with the GitHub secret. Please check your settings."
+          }
+
+  deploy:
+    needs: [bootstrap]
+    runs-on: [self-hosted, ubuntu-20.04]
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.FC_REPO_CHECKOUT_ALL }}
+          submodules: true
+          lfs: true
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets[needs.bootstrap.outputs.AZURE_CREDENTIALS_NAME] }}
+
+      - name: Get the cluster credentials
+        run: |
+          ./.github/scripts-common/azure/get-aks-credentials.ps1 `
+            -resourceGroup ${{ needs.bootstrap.outputs.AZURE_RESOURCE_GROUP }} `
+            -clusterName ${{ needs.bootstrap.outputs.AZURE_CLUSTER_NAME }}
+
+      # TODO: uncomment or remove for the production cluster
+      # - name: Import the charts and container images
+      #   run: |
+      #     ./.github/scripts-common/helmfile/sync-upstream-acr.ps1 `
+      #       -namespace ${{ needs.bootstrap.outputs.FC_DEPLOY_NAMESPACE }} `
+      #       -helmfileRoot ./src `
+      #       -acrLoginServer ${{ needs.bootstrap.outputs.AZURE_ACR_LOGIN_SERVER }} `
+      #       -upstreamAcrId ${{ needs.bootstrap.outputs.AZURE_UPSTREAM_ACR_ID }} `
+      #       -upstreamVerifyKey '${{ secrets.FC_COSIGN_DEV_PUBLIC_KEY }}' `
+      #       -signingKey '${{ secrets.FC_COSIGN_PROD_PRIVATE_KEY }}'
+
+      - name: Annotate the target namespace
+        if: github.ref_name == 'main' || github.event.inputs.force_deploy == 'true'
+        run: |
+          ./.github/scripts-common/cluster/annotate-namespace.ps1 `
+            -namespace ${{ needs.bootstrap.outputs.FC_DEPLOY_NAMESPACE }} `
+            -repo ${{ github.repository }} `
+            -branch ${{ github.ref_name }} `
+            -commit ${{ github.sha }}
+
+      - name: Apply KeyVault secrets to the namespace
+        if: github.ref_name == 'main' || github.event.inputs.force_deploy == 'true'
+        run: |
+          ./.github/scripts-common/cluster/apply-akv-secrets.ps1 `
+            -resourceGroup ${{ needs.bootstrap.outputs.AZURE_RESOURCE_GROUP }} `
+            -namespace ${{ needs.bootstrap.outputs.FC_DEPLOY_NAMESPACE }} `
+            -instance '${{ env.DEFAULT_FC_CLUSTER_INSTANCE }}' `
+            -namespaceOnly
+
+      - name: Run Helmfile diff against '${{ env.DEFAULT_FC_DEPLOY_NAMESPACE }}'
+        if: github.ref_name != 'main'
+        working-directory: src
+        env:
+          FOODS_LOGIN_SERVER: ${{ needs.bootstrap.outputs.AZURE_ACR_LOGIN_SERVER }}
+          FOODS_USERNAME: ${{ needs.bootstrap.outputs.AZURE_ACR_USERNAME }}
+          FOODS_PASSWORD: ${{ secrets[needs.bootstrap.outputs.AZURE_ACR_GITHUB_SECRET_NAME] }}
+        run: |
+          helmfile diff --namespace ${{ env.DEFAULT_FC_DEPLOY_NAMESPACE }} --validate --quiet
+
+      - name: Run Helmfile diff
+        working-directory: src
+        env:
+          FOODS_LOGIN_SERVER: ${{ needs.bootstrap.outputs.AZURE_ACR_LOGIN_SERVER }}
+          FOODS_USERNAME: ${{ needs.bootstrap.outputs.AZURE_ACR_USERNAME }}
+          FOODS_PASSWORD: ${{ secrets[needs.bootstrap.outputs.AZURE_ACR_GITHUB_SECRET_NAME] }}
+        run: |
+          helmfile diff --namespace ${{ needs.bootstrap.outputs.FC_DEPLOY_NAMESPACE }} --validate --quiet
+
+      - name: Run Helmfile apply
+        if: github.ref_name == 'main' || github.event.inputs.force_deploy == 'true'
+        working-directory: src
+        env:
+          FOODS_LOGIN_SERVER: ${{ needs.bootstrap.outputs.AZURE_ACR_LOGIN_SERVER }}
+          FOODS_USERNAME: ${{ needs.bootstrap.outputs.AZURE_ACR_USERNAME }}
+          FOODS_PASSWORD: ${{ secrets[needs.bootstrap.outputs.AZURE_ACR_GITHUB_SECRET_NAME] }}
+        run: |
+          helmfile apply --namespace ${{ needs.bootstrap.outputs.FC_DEPLOY_NAMESPACE }} --validate --quiet

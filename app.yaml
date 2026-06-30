@@ -1,0 +1,32 @@
+# TODO: add the release artifact references here
+
+releases: []
+
+# TODO: examples
+  # - name: identity-server-database
+  #   version: 0.1.160
+  #   inherit:
+  #     - template: default
+  #     - template: fc-default-chart
+  #   values:
+  #     - ./values/important.yaml
+  #     - identityServerDatabase:
+  #         storage:
+  #           class: managed-premium
+  #           size: 32Gi
+
+  # - name: identity-server-database-migrations
+  #   version: 0.1.168
+  #   inherit:
+  #     - template: default
+  #     - template: fc-default-chart
+  #     - template: fc-default-settings
+
+  # - name: identity-server-api
+  #   version: 0.1.168
+  #   inherit:
+  #     - template: default
+  #     - template: fc-default-chart
+  #     - template: fc-default-settings
+  #   values:
+  #     - ./values/ingress.yaml.gotmpl

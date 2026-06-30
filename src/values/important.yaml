@@ -1,0 +1,11 @@
+tolerations:
+  - key: important
+    operator: Exists
+    effect: NoSchedule
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: important
+          operator: Exists

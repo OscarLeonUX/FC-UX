@@ -1,0 +1,11 @@
+templates:
+  default:
+    namespace: {{ .Namespace | required "namespace should be set" }}
+
+  fc-default-chart:
+    chart: foods/helm/{{ "{{ .Release.Name }}" }}
+
+  fc-default-settings:
+    valuesTemplate:
+      - image:
+          repository: {{ tpl .Values.repo_url . }}

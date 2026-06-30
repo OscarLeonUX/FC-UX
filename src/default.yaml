@@ -1,0 +1,11 @@
+# TODO: review the repo URL
+repo_url: '{{ env "FOODS_LOGIN_SERVER" | default "" | required "repo_url should be set" }}'
+# repo_url: '{{ env "FOODS_LOGIN_SERVER" | default "crfoodscoredev001.azurecr.io" | required "repo_url should be set" }}'
+# repo_url: '{{ env "FOODS_LOGIN_SERVER" | default "crfoodscoreprod001.azurecr.io" | required "repo_url should be set" }}'
+
+# TODO: set the cert, name and domain fields
+host:
+  issuer: '{{ "" | required "host.issuer should be set" }}'
+  cert: '{{ "" | required "host.cert should be set" }}'
+  name: '{{ "" | required "host.name should be set" }}'
+  domain: '{{ "" | required "host.domain should be set" }}'

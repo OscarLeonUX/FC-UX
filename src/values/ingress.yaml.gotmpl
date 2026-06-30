@@ -1,0 +1,6 @@
+"{{ exec "pwsh" (list "../scripts/ConvertTo-CamelCase.ps1" .Release.Name) }}":
+  host:
+    issuer: "{{ tpl .Values.host.issuer .Values }}"
+    cert: "{{ tpl .Values.host.cert .Values }}"
+    name: "{{ tpl .Values.host.name .Values }}"
+    domain: "{{ tpl .Values.host.domain .Values }}"

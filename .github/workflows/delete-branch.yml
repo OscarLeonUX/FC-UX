@@ -1,0 +1,89 @@
+name: Branch Deleted - Remove Cluster Environments
+
+on: delete
+
+concurrency: ci-${{ github.repository }}
+
+env: {}
+  # TODO: uncomment for the correct target environment
+  # DEFAULT_AZURE_CREDENTIALS_NAME: "AZURE_CREDENTIALS"
+  # DEFAULT_AZURE_RESOURCE_GROUP: "rg-core-dev-001"
+  # DEFAULT_AZURE_CREDENTIALS_NAME: "AZURE_PROD_CREDENTIALS"
+  # DEFAULT_AZURE_RESOURCE_GROUP: "rg-core-prod-001"
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+
+  delete:
+    if: github.event.ref_type == 'branch'
+    runs-on: [self-hosted, ubuntu-20.04]
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.FC_REPO_CHECKOUT_ALL }}
+          submodules: true
+          lfs: true
+
+      - name: Pull LFS files
+        run: |
+          git lfs pull && git submodule foreach --recursive "git lfs pull"
+
+      - name: Set the env vars
+        id: azure_env
+        run: |
+          @(
+            @{ name = 'AZURE_CREDENTIALS_NAME'; values = @('${{ inputs.azure_credentials_name }}', '${{ env.DEFAULT_AZURE_CREDENTIALS_NAME }}') },
+            @{ name = 'AZURE_RESOURCE_GROUP'; values = @('${{ inputs.azure_resource_group }}', '${{ env.DEFAULT_AZURE_RESOURCE_GROUP }}') }
+          ) | ForEach-Object {
+            [string] $name = $_.name
+            [object] $value = $_.values | Where-Object { $_ } | Select-Object -First 1
+            "${name}=${value}" |
+              Tee-Object -FilePath $env:GITHUB_OUTPUT -Append -Encoding Ascii |
+              Tee-Object -FilePath $env:GITHUB_ENV -Append -Encoding Ascii
+          }
+
+      - name: Get the deployment configuration params
+        id: deployment_name
+        run: |
+          ./.github/scripts-common/bootstrap/get-deployment-config.ps1 -branchName '${{ github.event.ref }}'
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets[env.AZURE_CREDENTIALS_NAME] }}
+
+      - name: Get the AKS configuration
+        id: aks
+        run: |
+          ./.github/scripts-common/bootstrap/get-aks.ps1 -resourceGroup '${{ env.AZURE_RESOURCE_GROUP }}'
+
+      - name: Get the cluster credentials
+        run: |
+          ./.github/scripts-common/azure/get-aks-credentials.ps1 `
+            -resourceGroup ${{ env.AZURE_RESOURCE_GROUP }} `
+            -clusterName ${{ env.AZURE_CLUSTER_NAME }}
+
+      - name: Get the number of matching branches in the organisation
+        if: steps.deployment_name.outputs.FC_DEPLOYMENT_NAME
+        id: branches
+        env:
+          GH_TOKEN: ${{ secrets.FC_REPO_CHECKOUT_ALL }}
+        run: |
+          ./.github/scripts-common/github/get-matching-branches.ps1 `
+            -owner ${{ github.repository_owner }} `
+            -branch ${{ github.event.ref }}
+
+      - name: Remove cluster environments
+        if: >
+          steps.deployment_name.outputs.FC_DEPLOYMENT_NAME &&
+          steps.branches.outputs.FC_MATCHED_REPO_COUNT == '0'
+        run: |
+          ./.github/scripts-common/cluster/remove-namespaces.ps1 `
+            -namespaces @(
+              "${{ steps.deployment_name.outputs.FC_DEPLOYMENT_NAME }}"
+            )

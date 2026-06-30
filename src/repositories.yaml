@@ -1,0 +1,7 @@
+repositories:
+  - name: foods
+    url: {{ tpl .Values.repo_url . }}
+    oci: true
+  - name: bitnami
+    url: registry-1.docker.io/bitnamicharts
+    oci: true

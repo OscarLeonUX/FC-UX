@@ -1,0 +1,17 @@
+helmDefaults:
+  createNamespace: true
+  wait: true
+  waitForJobs: false
+  timeout: 600
+  historyMax: 20
+
+environments:
+  default:
+    values:
+      - default.yaml
+
+{{ tpl (readFile "templates.yaml") . }}
+
+{{ tpl (readFile "repositories.yaml") . }}
+
+{{ tpl (readFile "../app.yaml") . }}

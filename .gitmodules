@@ -1,0 +1,3 @@
+[submodule ".github/scripts-common"]
+	path = .github/scripts-common
+	url = git@github.com:rmc0207/fc.devops.github-actions.scripts.git
