@@ -79,6 +79,10 @@ See [ADR-028](../adr/028-page-header-right-slot-order.md).
 
 See [ADR-031](../adr/031-page-header-secondary-action-grouping.md).
 
+### Secondary action icon treatment
+
+Within one `actions[]` cluster, pick one visual language: icon-only for at most one action — the single most frequent secondary action — and icon+label for the rest. Never mix icon+label and label-only buttons within the same cluster; apply one treatment to every secondary action in it. This extends ADR-016's row-action icon model beyond table rows.
+
 ### Selector count
 
 Maximum 3 selectors in `selectors[]`. If more than 3 inline selectors are needed, move them to a filter panel.
@@ -149,6 +153,7 @@ Title loading: `<Skeleton className='h-10 w-48'>` — 40 px tall, 192 px wide (T
 - Keep breadcrumbs to a maximum of 3 visible levels.
 - Use the data-level test (single record vs result set) to choose between `navigationTabs` and Views bar.
 - Make the breadcrumb ellipsis interactive — keyboard and click must both work.
+- Pick one icon treatment — icon-only or icon+label — per `actions[]` cluster.
 
 **Don't**
 - Don't include a subtitle on Header–Parent pages (category or list pages).
@@ -159,6 +164,7 @@ Title loading: `<Skeleton className='h-10 w-48'>` — 40 px tall, 192 px wide (T
 - Don't place the primary CTA in `actions[]` on a Header–Parent page — it belongs in Slot 4 (Filter / action bar).
 - Don't render two competing top-level primary actions on a Header–Child page — if the CTA belongs to an embedded table, it lives in that table's toolbar, not `actions[]`.
 - Don't render a destructive action as a standalone button in `actions[]` — route it through an action menu or a confirmation dialog trigger, regardless of secondary-action count.
+- Don't mix icon-only, icon+label, and label-only buttons within the same `actions[]` cluster.
 
 ---
 
