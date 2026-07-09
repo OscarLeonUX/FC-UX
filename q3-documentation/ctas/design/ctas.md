@@ -6,16 +6,13 @@ This guide covers the rules that apply to any call-to-action (CTA) or text butto
 
 ## Placement
 
-The primary CTA's placement depends on the page's PageHeader variant.
+The primary CTA always lives in **Slot 4 — Filter / action bar**, left-aligned — on every page, regardless of Header–Parent vs Header–Child variant. It never renders in the Page Header's `actions[]` slot, which is reserved for secondary actions only.
 
-| Variant | Placement |
-|---|---|
-| Header–Parent (list, category, result set) | Slot 4 — Filter / action bar, left-aligned. Never in the Page Header. |
-| Header–Child (single named entity record) | Page Header's `actions[]` slot, right-aligned. |
+A page with a primary action but no filter controls still renders a CTA-only Slot 4 — this is a valid, intentional layout, not an exception.
 
-**Exception:** on a Header–Child page, if the CTA actually belongs to an embedded data table (e.g. a related-records table with its own "New X" action), it lives in that table's own toolbar — not the Page Header. A page never carries two competing top-level primary actions.
+**Table-scoped vs page-scoped:** if a page's primary action actually belongs to an embedded data table (e.g. a related-records table with its own "New X" action), that action lives in the table's own toolbar per the Tables guide. This is a separate scope question — table vs page — independent of Header–Parent vs Header–Child. A page never carries two competing top-level primary actions.
 
-See [ADR-045](../../app-shell/adr/045-primary-cta-placement-header-parent-vs-child.md), the [App Shell guide](../../app-shell/design/app-shell.md), and the [PageHeader guide](../../headers/design/page-header.md).
+See [ADR-045](../../app-shell/adr/045-primary-cta-slot-4-universal.md), the [App Shell guide](../../app-shell/design/app-shell.md), and the [PageHeader guide](../../headers/design/page-header.md).
 
 ### Table-level toolbar
 
@@ -89,4 +86,4 @@ See [ADR-016](../../tables/adr/016-row-action-slot-model.md) for the original ta
 - [ADR-016](../../tables/adr/016-row-action-slot-model.md) — row action slot model.
 - [ADR-036](../../headers/adr/036-confirm-button-verb-match.md) — verb-match origin.
 - [ADR-037](../../headers/adr/037-dialog-loading-state-lockout.md) — dialog loading lockout.
-- [ADR-045](../../app-shell/adr/045-primary-cta-placement-header-parent-vs-child.md) — placement split.
+- [ADR-045](../../app-shell/adr/045-primary-cta-slot-4-universal.md) — Slot 4 owns the primary CTA on every page.

@@ -317,9 +317,9 @@ Filter controls in this bar are 32px in height.
 - **Layout toggle position:** right — icon-only buttons that switch the content area between display formats (e.g. list / grid). Distinct from the Views bar: no label, no pill style.
 - **Hard limit: 3 visible filter dropdowns.** A 4th overflows the layout at 1536px and pushes the layout toggle off-screen. This is a layout constraint, not a preference. Use a "More filters" overflow pattern for additional options.
 
-**Required on Header–Parent pages whenever the page has a primary action (CTA)** — even when there are no filter dropdowns. A CTA-only bar (no filters) is a valid pattern; the slot exists to place the CTA in the correct position.
+**Required on every page whenever the page has a primary action (CTA)** — even when there are no filter dropdowns. A CTA-only bar (no filters) is a valid pattern; the slot exists to place the CTA in the correct position.
 
-On Header–Child pages, the primary CTA instead lives in the Page Header's `actions[]` slot — see [ADR-045](../adr/045-primary-cta-placement-header-parent-vs-child.md). Slot 4 on a Header–Child page, if present, is used only for filter controls scoping an embedded table or list — never to relocate that page's own primary CTA.
+This holds regardless of Header–Parent vs Header–Child page variant — see [ADR-045](../adr/045-primary-cta-slot-4-universal.md). A Header–Child page with a primary action still renders a CTA-only Slot 4, even without filter controls; the CTA is never relocated to the Page Header's `actions[]` slot.
 
 ---
 

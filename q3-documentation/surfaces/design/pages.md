@@ -22,7 +22,7 @@ Do not use a Page because the content needs a URL. Evaluate independent identity
 
 ### Required elements
 
-- **Page header** — contains the `<h1>` (page title) and breadcrumb navigation. Whether it also carries the primary CTA depends on the page's Header–Parent vs Header–Child variant — see below.
+- **Page header** — contains the `<h1>` (page title) and breadcrumb navigation. It never carries the primary CTA — see the App Shell guide's Slot 4.
 - **Main content area** — wrapped in `<main role="main">` with `id="main-content"`.
 - **Skip link** — first focusable element in the DOM, jumps to `#main-content`.
 - **Breadcrumb** — present on all pages below root level.
@@ -31,7 +31,7 @@ Do not use a Page because the content needs a URL. Evaluate independent identity
 
 - **Sibling navigation (tab bar)** — only when 2–7 siblings exist at the same hierarchy level.
 - **Secondary actions toolbar**.
-- **Filter / action bar** — anchored below the page header on Header–Parent pages. Carries filter controls and the primary CTA together, CTA left-aligned — see the App Shell guide's Slot 4.
+- **Filter / action bar** — anchored below the page header on every page that has a primary action, Header–Parent or Header–Child alike. Carries filter controls when present and the primary CTA, left-aligned — a CTA-only bar is valid when there are no filters. See the App Shell guide's Slot 4.
 
 ### Page header layout (slot system)
 
@@ -40,9 +40,9 @@ Do not use a Page because the content needs a URL. Evaluate independent identity
 | 1 | Breadcrumb (above the title row) |
 | 2 | Page `<h1>` title |
 | 3 | Subtitle or record count |
-| 4 | Primary CTA and secondary actions (right-aligned) — **Header–Child pages only.** On Header–Parent pages the primary CTA lives in the Filter / action bar below the header instead, left-aligned. |
+| 4 | Secondary actions only (right-aligned). The primary CTA never renders here — it lives in the Filter / action bar below the header (App Shell Slot 4), on every page variant. |
 
-**Header–Parent vs Header–Child** — see `page-header.md` for the variant decision test ("how many records is this page primarily about?"). See [ADR-045](../../app-shell/adr/045-primary-cta-placement-header-parent-vs-child.md).
+**Primary CTA placement** — the primary CTA always lives in the Filter / action bar (App Shell Slot 4), left-aligned, regardless of Header–Parent vs Header–Child variant. See [ADR-045](../../app-shell/adr/045-primary-cta-slot-4-universal.md).
 
 ## Behaviour
 

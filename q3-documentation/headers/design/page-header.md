@@ -55,7 +55,7 @@ See [ADR-027](../adr/027-navigationtabs-single-record.md).
 | Back link | Optional | Optional | Provides a direct back-navigation target. |
 | `navigationTabs` | Omit | Optional | 2–5 tabs. See count rules below. |
 | `selectors[]` | Optional | Optional | Max 3. Inline select controls for page-scope filtering (e.g. date range, status). Beyond 3: move to filter panel. |
-| `actions[]` | Secondary actions only | Optional (primary CTA) | Page-level CTAs. On Header–Parent pages the primary CTA lives in Slot 4 (Filter / action bar), never here. On Header–Child pages this slot carries the primary CTA. See [ADR-045](../adr/045-primary-cta-placement-header-parent-vs-child.md). |
+| `actions[]` | Secondary actions only | Secondary actions only | Page-level secondary CTAs. The primary CTA lives in Slot 4 (Filter / action bar) on every page — never here, regardless of variant. See [ADR-045](../adr/045-primary-cta-slot-4-universal.md). |
 | `customActions` | Optional | Optional | Escape hatch for non-standard right-side content. |
 | `extraRightContent[]` | Optional | Optional | Rendered leftmost in the right-side group. |
 
@@ -71,13 +71,15 @@ See [ADR-028](../adr/028-page-header-right-slot-order.md).
 
 ### Action grouping
 
+`actions[]` holds secondary actions only — see [ADR-045](../adr/045-primary-cta-slot-4-universal.md). The primary CTA is never part of this grouping; it renders separately, in Slot 4.
+
 | Secondary action count | Treatment |
 |---|---|
-| 0 | Primary CTA only |
-| 1–2 | Render as outline buttons alongside the primary CTA |
-| 3+ | Collapse into dropdown. Primary CTA remains standalone. |
+| 0 | Omit `actions[]` entirely |
+| 1–2 | Render as outline buttons |
+| 3+ | Collapse into a dropdown |
 
-See [ADR-031](../adr/031-page-header-secondary-action-grouping.md).
+See [ADR-031](../adr/031-page-header-secondary-action-grouping.md) — note ADR-031's original text assumed `actions[]` held the primary CTA alongside secondary actions; treat that language as superseded by ADR-045 until ADR-031 is formally revised.
 
 ### Secondary action icon treatment
 
@@ -160,8 +162,8 @@ Title loading: `<Skeleton className='h-10 w-48'>` — 40 px tall, 192 px wide (T
 - Don't let Views bar and `navigationTabs` coexist on the same page.
 - Don't use more than 3 inline `selectors[]` — move the overflow to a filter panel.
 - Don't ship 6+ tabs without a design escalation.
-- Don't place the primary CTA in `actions[]` on a Header–Parent page — it belongs in Slot 4 (Filter / action bar).
-- Don't render two competing top-level primary actions on a Header–Child page — if the CTA belongs to an embedded table, it lives in that table's toolbar, not `actions[]`.
+- Don't place the primary CTA in `actions[]` on any page — it belongs in Slot 4 (Filter / action bar), regardless of Header–Parent vs Header–Child.
+- Don't render two competing top-level primary actions when a page's table has its own primary action — that action lives in the table's toolbar, not `actions[]` or Slot 4.
 - Don't render a destructive action as a standalone button in `actions[]` — route it through an action menu or a confirmation dialog trigger, regardless of secondary-action count.
 
 ---
