@@ -4,6 +4,8 @@
 **Date:** 2026-06-29
 **Guide:** PageHeader
 
+> **Note (2026-07-09):** this ADR was written assuming `actions[]` holds a primary CTA alongside secondary actions. [ADR-045](../../app-shell/adr/045-primary-cta-slot-4-universal.md) supersedes that assumption — the primary CTA lives in App Shell Slot 4 on every page; `actions[]` is secondary-actions-only. The grouping thresholds below (0 / 1–2 / 3+) still apply to the secondary actions themselves, but any "primary CTA" language below is superseded. This ADR has not yet been formally rewritten — see ADR-045's Consequences for the pending scope decision (DC-1-SCOPE).
+
 ---
 
 ## Context

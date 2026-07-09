@@ -4,6 +4,8 @@
 **Date:** 2026-06-29
 **Guide:** PageHeader
 
+> **Note (2026-07-09):** this ADR's rationale for `actions[]` ("the primary and secondary CTAs") is superseded by [ADR-045](../../app-shell/adr/045-primary-cta-slot-4-universal.md) — the primary CTA lives in App Shell Slot 4 on every page, not in `actions[]`. `actions[]` holds secondary actions only. The slot rendering order itself (`extraRightContent[]` → `selectors[]` → `actions[]` → `customActions`) is unaffected. This ADR has not yet been formally rewritten to reflect this — see [ADR-045](../../app-shell/adr/045-primary-cta-slot-4-universal.md)'s Consequences for the pending scope decision.
+
 ---
 
 ## Context
