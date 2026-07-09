@@ -55,7 +55,7 @@ See [ADR-027](../adr/027-navigationtabs-single-record.md).
 | Back link | Optional | Optional | Provides a direct back-navigation target. |
 | `navigationTabs` | Omit | Optional | 2–5 tabs. See count rules below. |
 | `selectors[]` | Optional | Optional | Max 3. Inline select controls for page-scope filtering (e.g. date range, status). Beyond 3: move to filter panel. |
-| `actions[]` | Optional | Optional | Page-level CTAs. See action grouping rules. |
+| `actions[]` | Secondary actions only | Optional (primary CTA) | Page-level CTAs. On Header–Parent pages the primary CTA lives in Slot 4 (Filter / action bar), never here. On Header–Child pages this slot carries the primary CTA. See [ADR-045](../adr/045-primary-cta-placement-header-parent-vs-child.md). |
 | `customActions` | Optional | Optional | Escape hatch for non-standard right-side content. |
 | `extraRightContent[]` | Optional | Optional | Rendered leftmost in the right-side group. |
 
@@ -156,6 +156,8 @@ Title loading: `<Skeleton className='h-10 w-48'>` — 40 px tall, 192 px wide (T
 - Don't let Views bar and `navigationTabs` coexist on the same page.
 - Don't use more than 3 inline `selectors[]` — move the overflow to a filter panel.
 - Don't ship 6+ tabs without a design escalation.
+- Don't place the primary CTA in `actions[]` on a Header–Parent page — it belongs in Slot 4 (Filter / action bar).
+- Don't render two competing top-level primary actions on a Header–Child page — if the CTA belongs to an embedded table, it lives in that table's toolbar, not `actions[]`.
 
 ---
 
