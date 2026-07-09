@@ -64,11 +64,11 @@ Pin the primary identifier column to the left and the row actions column to the 
 
 The filter surface takes one of two forms. The surface and its personalisation panel are a matched set — do not mix parts from different patterns.
 
-**Pattern A — Inline filter row** — a horizontal row of filter controls directly above the table. The filter set is defined at build time; all users see the same options. When the table has more filters than most users need active simultaneously, pair the row with a "Filters" sheet — a drawer that slides in from the right — so users can show and hide individual filters from the predefined list. Locked filters remain visible in the row at all times and cannot be hidden via the sheet.
+**Pattern A — Inline filter controls** — filter controls sit directly in the table-level toolbar, immediately after search, on the same row. The filter set is defined at build time; all users see the same options. When the table has more filters than most users need active simultaneously, pair the toolbar with a "Filters" sheet — a drawer that slides in from the right — so users can show and hide individual filters from the predefined list. Locked filters remain visible in the toolbar at all times and cannot be hidden via the sheet.
 
 Use Pattern A when the filter set is defined at build time and the same options suit all users.
 
-**Pattern B — Chip toolbar with sidebar panel** — active filters appear as dismissible chips in the toolbar; there is no inline filter row. The full filter list lives in a panel that opens to the right of the table. Users pin and unpin individual filters from the panel to control which chips are shown. Pinned selections persist per user. A locked filter's chip is always shown and cannot be dismissed or unpinned.
+**Pattern B — Chip toolbar with sidebar panel** — active filters appear as dismissible chips directly in the table-level toolbar, immediately after search, on the same row. The full filter list lives in a panel that opens to the right of the table. Users pin and unpin individual filters from the panel to control which chips are shown. Pinned selections persist per user. A locked filter's chip is always shown and cannot be dismissed or unpinned.
 
 Use Pattern B when the filter list comes from the server and different users benefit from surfacing different subsets of filters.
 
@@ -229,13 +229,14 @@ Sort state is encoded in the URL alongside filter state. It persists within a se
 
 The toolbar sits above the table. It contains, left to right:
 
+- **Primary action** — the primary table-level action ("New supplier", "Import") sits first, at the top left of the toolbar. Its icon, if it has one, trails the label — never leads it.
 - **Search** — global text search. Fixed width, not inside a column header. Searches across the full dataset, not just the visible page.
-- **Filter row or chips** — directly below or inline in the toolbar, depending on the layout in use.
-- **Right side** — utility controls (column visibility, export, layout options) and the primary action button.
+- **Filters** — inline in the same row, immediately after search. This applies to both filter surface patterns; neither uses a separate row beneath the toolbar.
+- **Right side** — utility controls only (column visibility, export, layout options).
 
-The primary table-level action ("New supplier", "Import") sits at the top right of the toolbar. It is always visible when the user is not in bulk selection mode.
+The primary table-level action sits at the top left of the toolbar, before search and filters. It is the first control a user reaches, reflecting that creating a new record is the highest-intent action on the page. It is always visible when the user is not in bulk selection mode.
 
-Global text search and column filters are additive — results must satisfy both simultaneously. When both are active, the search field and filter chips are both visible at the same time.
+Global text search and column filters are additive — results must satisfy both simultaneously. When both are active, the search field and filter controls are both visible at the same time.
 
 ## Do
 
@@ -251,7 +252,9 @@ Global text search and column filters are additive — results must satisfy both
 - Show "Showing X–Y of N" row count alongside pagination controls.
 - Use numbered pagination for compliance and audit tables.
 - Offer saved views only for primary working surfaces with meaningfully varied user needs.
-- Keep the primary table-level action at the top right of the toolbar.
+- Keep the primary table-level action at the top left of the toolbar, before search and filters.
+- Place filters inline in the toolbar immediately after search — same row, both filter patterns.
+- Trail the primary table-level action's icon after its label, if it has one.
 
 ## Don't
 
@@ -268,9 +271,10 @@ Global text search and column filters are additive — results must satisfy both
 - Show individual row action menus while the bulk action bar is active.
 - Use "Reset" instead of "Clear filters".
 - Name a saved view with a generic label ("My view 1") — names must describe what the view shows.
-- Mix parts from different filter patterns — Pattern A's inline filter row pairs only with the Filters sheet; Pattern B's chip toolbar pairs only with the sidebar panel.
+- Mix parts from different filter patterns — Pattern A's inline filter controls pair only with the Filters sheet; Pattern B's chip toolbar pairs only with the sidebar panel.
 - Offer a user-controlled density toggle — density is set at build time per table.
 - Use a row text button to trigger an in-place action or approval — text buttons navigate to another route; confirmatory and destructive actions go in the action menu.
+- Split filters into a separate row beneath the toolbar — keep them inline with search.
 
 ## Related
 
