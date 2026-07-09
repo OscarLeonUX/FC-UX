@@ -158,6 +158,7 @@ Title loading: `<Skeleton className='h-10 w-48'>` — 40 px tall, 192 px wide (T
 - Don't ship 6+ tabs without a design escalation.
 - Don't place the primary CTA in `actions[]` on a Header–Parent page — it belongs in Slot 4 (Filter / action bar).
 - Don't render two competing top-level primary actions on a Header–Child page — if the CTA belongs to an embedded table, it lives in that table's toolbar, not `actions[]`.
+- Don't render a destructive action as a standalone button in `actions[]` — route it through an action menu or a confirmation dialog trigger, regardless of secondary-action count.
 
 ---
 

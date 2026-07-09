@@ -167,6 +167,14 @@ Actions must be visible at all times within their slot, or accessible via the ac
 
 Destructive row actions — delete, reject, deactivate — must require confirmation before executing. Confirmation may be a dialog, or an inline confirmation state on the row. Never execute a destructive action immediately on first click.
 
+### Action menu loading state
+
+A non-dangerous action triggered from the action menu keeps the menu open with a loading indicator on the selected item until the call resolves — it does not close immediately on click. Dangerous actions route through a confirmation dialog first; the dialog's own loading lockout (ADR-037) governs from that point.
+
+### CTA and text-button labels
+
+Every CTA and text-button label is a specific verb naming the action performed — never "Submit", "OK", "Confirm", or a bare noun. Cap the interpolated entity-name portion of a label, not the verb — truncate with an ellipsis and show the full value in a tooltip. Keep the full rendered label at a soft cap around 32–40 characters, consistent with a fixed single-line button.
+
 ## Bulk actions
 
 ### Row selection
@@ -183,6 +191,12 @@ When one or more rows are selected, a contextual action bar appears above the ta
 The bar disappears when selection is cleared. The normal toolbar is restored.
 
 Do not mix bulk mode and individual row actions — when the contextual bar is visible, individual row action menus are suppressed.
+
+### Dangerous bulk actions
+
+Dangerous bulk actions — delete, reject, deactivate — require a confirmation dialog stating the affected record count ("Delete 14 suppliers?") before executing. Non-destructive bulk actions — export, tag — execute immediately with no confirmation step.
+
+While a bulk action's request is in flight, only the clicked action button shows a loading state and disables. Row checkboxes, other bulk-bar controls, and "Clear selection" remain fully interactive — do not lock the whole bar or table for a single bulk action.
 
 ### Select all across pages
 
@@ -255,6 +269,9 @@ Global text search and column filters are additive — results must satisfy both
 - Keep the primary table-level action at the top left of the toolbar, before search and filters.
 - Place filters inline in the toolbar immediately after search — same row, both filter patterns.
 - Trail the primary table-level action's icon after its label, if it has one.
+- Require confirmation with the affected record count before executing a dangerous bulk action.
+- Keep other rows and bulk-bar controls interactive while a single bulk action's request is in flight.
+- Use a specific verb naming the action for every CTA and text-button label.
 
 ## Don't
 
@@ -275,6 +292,8 @@ Global text search and column filters are additive — results must satisfy both
 - Offer a user-controlled density toggle — density is set at build time per table.
 - Use a row text button to trigger an in-place action or approval — text buttons navigate to another route; confirmatory and destructive actions go in the action menu.
 - Split filters into a separate row beneath the toolbar — keep them inline with search.
+- Use "Submit", "OK", "Confirm", or a bare noun as a CTA or text-button label.
+- Lock the whole table or bulk-action bar while a single bulk action's request is in flight.
 
 ## Related
 

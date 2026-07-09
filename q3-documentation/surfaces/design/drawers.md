@@ -33,6 +33,10 @@ Use a Drawer when the user needs to view or edit detail without navigating away 
 - Overflow menu: adjacent to Cancel, for additional actions (approve, change status, delist). Opens a dropdown.
 - Destructive action (e.g. Delete): `mr-auto` — pushed to the far left of the footer, visually separated from the confirm/cancel pair.
 
+### Footer loading state
+
+The primary action shows a loading state and disables while its request is in flight. Cancel remains active — a drawer footer inherits the same model as Form submit button states: Cancel means discard, not stop-in-progress.
+
 ### Tabs inside a drawer
 
 Tabs are allowed once at the top level of the drawer hierarchy — placed directly below the header. One tab level only. Tabs must be closely related siblings sharing the same subject.
