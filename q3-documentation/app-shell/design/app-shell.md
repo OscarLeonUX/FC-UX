@@ -315,7 +315,7 @@ Filter controls in this bar are 32px in height.
 
 - **CTA position:** left
 - **Layout toggle position:** right — icon-only buttons that switch the content area between display formats (e.g. list / grid). Distinct from the Views bar: no label, no pill style.
-- **Hard limit: 3 visible filter dropdowns.** A 4th overflows the layout at 1536px and pushes the layout toggle off-screen. This is a layout constraint, not a preference. Use a "More filters" overflow pattern for additional options.
+- **Filter overflow:** filters are not fixed dropdowns with a hard count cap — they render as dynamic pinned pills, added and removed through a "Filters" sidebar toggle that shows an active-count badge. When the row runs out of horizontal room, it wraps to a second line; nothing is pushed off-screen. (Corrected 2026-07-09 — the previous claim of a hard 3-dropdown limit that "overflows the layout at 1536px and pushes the layout toggle off-screen" didn't match the real shared toolbar component and has been removed.)
 
 **Required on every page whenever the page has a primary action (CTA)** — even when there are no filter dropdowns. A CTA-only bar (no filters) is a valid pattern; the slot exists to place the CTA in the correct position.
 
