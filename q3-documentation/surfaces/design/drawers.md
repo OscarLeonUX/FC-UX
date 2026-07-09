@@ -35,7 +35,7 @@ Use a Drawer when the user needs to view or edit detail without navigating away 
 
 ### Footer loading state
 
-The primary action shows a loading state and disables while its request is in flight. Cancel remains active — a drawer footer inherits the same model as Form submit button states: Cancel means discard, not stop-in-progress.
+See the [CTAs guide](../../ctas/design/ctas.md#loading-and-disabled-states) — the primary action locks while its request is in flight; Cancel stays active, inheriting the Form submit-button model.
 
 ### Tabs inside a drawer
 
@@ -132,6 +132,7 @@ Drawer slides in from the right. Duration 250 ms, ease-out. Remove the drawer fr
 
 ## Related
 
+- **CTAs and text buttons** — label, confirmation, loading-state, and icon-treatment rules shared with every other surface.
 - **Dialogs** — use when a decision is required; the correct surface when a child drawer needs to go deeper than L2.
 - **Sheets** — use for non-blocking supplementary panels that don't require a focus trap.
 - **Pages** — Full-screen Drawers with a URL are effectively pages and should follow page accessibility rules in addition to drawer rules.

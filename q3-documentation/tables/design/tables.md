@@ -169,11 +169,11 @@ Destructive row actions — delete, reject, deactivate — must require confirma
 
 ### Action menu loading state
 
-A non-dangerous action triggered from the action menu keeps the menu open with a loading indicator on the selected item until the call resolves — it does not close immediately on click. Dangerous actions route through a confirmation dialog first; the dialog's own loading lockout (ADR-037) governs from that point.
+See the [CTAs guide](../../ctas/design/ctas.md#loading-and-disabled-states) — a non-dangerous menu item keeps the menu open with a loading indicator until the call resolves; a dangerous one routes through a confirmation dialog first.
 
 ### CTA and text-button labels
 
-Every CTA and text-button label is a specific verb naming the action performed — never "Submit", "OK", "Confirm", or a bare noun. Cap the interpolated entity-name portion of a label, not the verb — truncate with an ellipsis and show the full value in a tooltip. Keep the full rendered label at a soft cap around 32–40 characters, consistent with a fixed single-line button.
+See the [CTAs guide](../../ctas/design/ctas.md#labels) for the verb-match and label-length rules that apply to every CTA and text button on this surface.
 
 ## Bulk actions
 
@@ -194,9 +194,7 @@ Do not mix bulk mode and individual row actions — when the contextual bar is v
 
 ### Dangerous bulk actions
 
-Dangerous bulk actions — delete, reject, deactivate — require a confirmation dialog stating the affected record count ("Delete 14 suppliers?") before executing. Non-destructive bulk actions — export, tag — execute immediately with no confirmation step.
-
-While a bulk action's request is in flight, only the clicked action button shows a loading state and disables. Row checkboxes, other bulk-bar controls, and "Clear selection" remain fully interactive — do not lock the whole bar or table for a single bulk action.
+Dangerous bulk actions require a confirmation dialog stating the affected record count ("Delete 14 suppliers?"). See the [CTAs guide](../../ctas/design/ctas.md#confirmation) for the general confirmation and loading-state rules this follows — only the clicked action button locks; other rows and bulk-bar controls stay interactive.
 
 ### Select all across pages
 
@@ -269,9 +267,6 @@ Global text search and column filters are additive — results must satisfy both
 - Keep the primary table-level action at the top left of the toolbar, before search and filters.
 - Place filters inline in the toolbar immediately after search — same row, both filter patterns.
 - Trail the primary table-level action's icon after its label, if it has one.
-- Require confirmation with the affected record count before executing a dangerous bulk action.
-- Keep other rows and bulk-bar controls interactive while a single bulk action's request is in flight.
-- Use a specific verb naming the action for every CTA and text-button label.
 
 ## Don't
 
@@ -292,11 +287,10 @@ Global text search and column filters are additive — results must satisfy both
 - Offer a user-controlled density toggle — density is set at build time per table.
 - Use a row text button to trigger an in-place action or approval — text buttons navigate to another route; confirmatory and destructive actions go in the action menu.
 - Split filters into a separate row beneath the toolbar — keep them inline with search.
-- Use "Submit", "OK", "Confirm", or a bare noun as a CTA or text-button label.
-- Lock the whole table or bulk-action bar while a single bulk action's request is in flight.
 
 ## Related
 
+- **CTAs and text buttons** — label, confirmation, loading-state, and icon-treatment rules shared with every other surface.
 - **Pages** — the surface that hosts standalone tables. Covers page layout, header actions, and shell navigation.
 - **Drawers** — for record detail and quick-edit flows triggered from a table row.
 - **Dialogs** — for confirmation of destructive actions initiated from a table row or bulk action.
