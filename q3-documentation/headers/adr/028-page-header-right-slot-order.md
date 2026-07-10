@@ -4,8 +4,6 @@
 **Date:** 2026-06-29
 **Guide:** PageHeader
 
-> **Note (2026-07-09):** this ADR's rationale for `actions[]` ("the primary and secondary CTAs") is superseded by [ADR-045](../../app-shell/adr/045-primary-cta-slot-4-universal.md) — the primary CTA lives in App Shell Slot 4 on every page, not in `actions[]`. `actions[]` holds secondary actions only. The slot rendering order itself (`extraRightContent[]` → `selectors[]` → `actions[]` → `customActions`) is unaffected. This ADR has not yet been formally rewritten to reflect this — see [ADR-045](../../app-shell/adr/045-primary-cta-slot-4-universal.md)'s Consequences for the pending scope decision.
-
 ---
 
 ## Context
@@ -21,12 +19,16 @@ The rendering order in the right-side slot is fixed, left to right:
 Empty arrays collapse their slot — no gap is introduced. Omitting a prop and passing an empty array are equivalent.
 
 Rationale for this order:
-- `extraRightContent` carries supplementary information (status indicators, counts). It sits furthest from the primary CTA where it does not compete for attention.
+- `extraRightContent` carries supplementary information (status indicators, counts). It sits furthest from the action area where it does not compete for attention.
 - `selectors` contextualise the actions, so they precede them.
-- `actions` are the primary and secondary CTAs — they sit closest to the far-right edge where visual weight lands.
+- `actions` holds secondary actions only — see [ADR-045](../../app-shell/adr/045-primary-cta-slot-4-universal.md) and [ADR-031](031-page-header-secondary-action-grouping.md). The primary CTA lives in App Shell Slot 4, not here. On Header–Parent pages `actions[]` is typically empty; on Header–Child pages it holds the record's secondary actions (Duplicate, Archive, etc.).
 - `customActions` is an escape hatch and sits rightmost so it does not displace predictable action placement.
 
 ## Consequences
 
 - The order is non-negotiable in standard patterns. Deviations require explicit design sign-off.
 - Empty array and missing prop behave identically — no defensive rendering is needed.
+
+## Amendment (2026-07-10)
+
+Originally written assuming `actions[]` held a primary CTA alongside secondaries ("`actions` are the primary and secondary CTAs"). [ADR-045](../../app-shell/adr/045-primary-cta-slot-4-universal.md) established that the primary CTA lives in App Shell Slot 4 universally; the rationale above is updated to match. The rendering order itself — `extraRightContent[]` → `selectors[]` → `actions[]` → `customActions` — is unchanged by this amendment.

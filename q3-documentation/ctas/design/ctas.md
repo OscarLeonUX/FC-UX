@@ -10,6 +10,8 @@ The primary CTA always lives in **Slot 4 — Filter / action bar**, left-aligned
 
 A page with a primary action but no filter controls still renders a CTA-only Slot 4 — this is a valid, intentional layout, not an exception.
 
+**Where secondary actions go depends on the page variant** — see [ADR-031](../../headers/adr/031-page-header-secondary-action-grouping.md). On Header–Parent (list) pages, secondaries join the primary in the Slot 4 cluster; `actions[]` is unused. On Header–Child (detail) pages, secondaries render in `actions[]`, grouped by count.
+
 **Table-scoped vs page-scoped:** if a page's primary action actually belongs to an embedded data table (e.g. a related-records table with its own "New X" action), that action lives in the table's own toolbar per the Tables guide. This is a separate scope question — table vs page — independent of Header–Parent vs Header–Child. A page never carries two competing top-level primary actions.
 
 See [ADR-045](../../app-shell/adr/045-primary-cta-slot-4-universal.md), the [App Shell guide](../../app-shell/design/app-shell.md), and the [PageHeader guide](../../headers/design/page-header.md).

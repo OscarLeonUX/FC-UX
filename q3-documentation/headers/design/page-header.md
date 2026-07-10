@@ -55,7 +55,7 @@ See [ADR-027](../adr/027-navigationtabs-single-record.md).
 | Back link | Optional | Optional | Provides a direct back-navigation target. |
 | `navigationTabs` | Omit | Optional | 2–5 tabs. See count rules below. |
 | `selectors[]` | Optional | Optional | Max 3. Inline select controls for page-scope filtering (e.g. date range, status). Beyond 3: move to filter panel. |
-| `actions[]` | Secondary actions only | Secondary actions only | Page-level secondary CTAs. The primary CTA lives in Slot 4 (Filter / action bar) on every page — never here, regardless of variant. See [ADR-045](../adr/045-primary-cta-slot-4-universal.md). |
+| `actions[]` | Not used — secondaries move to Slot 4 too | Secondary actions only | Page-level secondary CTAs. The primary CTA lives in Slot 4 (Filter / action bar) on every page — never here. See Action grouping below and [ADR-045](../adr/045-primary-cta-slot-4-universal.md). |
 | `customActions` | Optional | Optional | Escape hatch for non-standard right-side content. |
 | `extraRightContent[]` | Optional | Optional | Rendered leftmost in the right-side group. |
 
@@ -71,7 +71,11 @@ See [ADR-028](../adr/028-page-header-right-slot-order.md).
 
 ### Action grouping
 
-`actions[]` holds secondary actions only — see [ADR-045](../adr/045-primary-cta-slot-4-universal.md). The primary CTA is never part of this grouping; it renders separately, in Slot 4.
+`actions[]` holds secondary actions only — see [ADR-045](../adr/045-primary-cta-slot-4-universal.md). The primary CTA is never part of this grouping; it renders separately, in Slot 4. Whether `actions[]` is used at all depends on the page variant:
+
+**Header–Parent (list) pages:** `actions[]` is not used. Primary and secondary actions both live in Slot 4, clustered — a primary button plus a single icon-triggered dropdown for secondaries.
+
+**Header–Child (detail) pages:** secondary actions render in `actions[]`, grouped by count:
 
 | Secondary action count | Treatment |
 |---|---|
@@ -79,7 +83,7 @@ See [ADR-028](../adr/028-page-header-right-slot-order.md).
 | 1–2 | Render as outline buttons |
 | 3+ | Collapse into a dropdown |
 
-See [ADR-031](../adr/031-page-header-secondary-action-grouping.md) — note ADR-031's original text assumed `actions[]` held the primary CTA alongside secondary actions; treat that language as superseded by ADR-045 until ADR-031 is formally revised.
+See [ADR-031](../adr/031-page-header-secondary-action-grouping.md).
 
 ### Secondary action icon treatment
 

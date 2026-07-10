@@ -282,3 +282,7 @@ Pass `null` to clear. Always clean up in the effect's return function.
 | Two `<Sidebar>` components side by side | `ShellSidebar` (Default) or `SubSidebar` (Settings) — one per layout |
 | Hardcoded `data-active` or custom active class on nav items | `isActive` prop on `ShellSidebarConfig` |
 | `localStorage.setItem('sidebar:state', ...)` in app code | `SidebarTrigger` / collapse toggle only — the sidebar manages its own state |
+
+### Known migration debt
+
+- `apps/schedule-manager-app/src/routes/index.lazy.tsx` — a list page that still populates `setHeaderActions` with its primary "+ Add schedule" button, the exact deprecated pattern above. Found 2026-07-10 while verifying the Slot 4 rework (see ADR-045, ADR-028, ADR-031). Supplier Manager and Audit Manager already use the correct pattern (primary + secondary cluster in `ApiDataTable.filterRowProps.leadingContent`); this instance has not been migrated.
