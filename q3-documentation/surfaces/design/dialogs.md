@@ -33,6 +33,8 @@ The secondary action in an outcome dialog navigates to the result (e.g. "View sk
 
 A Dialog may contain **at most 2 independent inputs**. One input = one control group: a dropdown, a checkbox group, or a text field each count as 1. Beyond 2 inputs the surface has become a form — use a Drawer instead.
 
+A conditionally-revealed dependent input counts toward this limit exactly as an independent one would. If one of the 2 inputs branches (e.g. selecting "Other" reveals a description field), that dependent field is a 3rd control group — the Dialog exceeds the limit and the surface should be a Drawer instead. See ADR-044.
+
 ## Sufficient context for destructive actions
 
 A destructive dialog may open directly from a list row when the row provides sufficient context: the **record name** and **at least one supporting attribute** (status, count, date, or type).
@@ -132,6 +134,7 @@ After a dialog action completes, choose between a toast and an outcome dialog ba
 - Put a data table inside a Dialog — a multi-column data table implies review; review belongs before the confirmation. A short manage list is the one exception.
 - Use a Dialog when the user needs to reference content outside it to complete the action.
 - Use a Dialog for more than 2 independent inputs.
+- Let a conditionally-revealed dependent input push a Dialog past the 2-input limit — it counts the same as an independent one.
 - Hide Cancel during processing.
 - Dismiss a Dialog on scrim click.
 - Use "Yes" / "No" as action labels.
